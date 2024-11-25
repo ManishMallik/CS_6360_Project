@@ -1,0 +1,55 @@
+StudentID,StudentName,CourseID,CourseName,Instructor
+1,Alice,101,Math101,Prof. Smith
+2,Bob,102,CS101,Prof. Brown
+3,Carol,101,Math101,Prof. Smith
+4,Dave,103,Physics101,Prof. White
+5,Eve,104,History101,Prof. Johnson
+6,Frank,105,Math102,Prof. Taylor
+7,Grace,102,CS101,Prof. Brown
+8,Hank,103,Physics101,Prof. White
+1,Alice,101,Math101,Prof. Johnson  # Primary key violation
+9,Ivy,106,CS102,Prof. Green
+10,Jack,104,History101,Prof. Johnson
+11,Karen,107,Math103,Prof. Taylor
+12,Liam,105,Math102,Prof. Taylor
+13,Mia,108,Biology101,Prof. Gray
+14,Noah,106,CS102,Prof. Green
+15,Olivia,109,Math104,Prof. Smith
+16,Paul,110,History102,Prof. Johnson
+17,Quinn,111,Physics102,Prof. White
+18,Rachel,108,Biology101,Prof. Gray
+4,Dave,103,Physics101,Prof. Green  # Primary key violation
+19,Steve,109,Math104,Prof. Smith
+20,Tracy,110,History102,Prof. Johnson
+21,Uma,111,Physics102,Prof. White
+22,Vera,112,Biology102,Prof. Gray
+23,Will,113,CS103,Prof. Green
+24,Xander,114,History103,Prof. Johnson
+25,Yara,115,Math105,Prof. Taylor
+26,Zane,116,Physics103,Prof. White
+27,Alex,117,CS104,Prof. Green
+28,Ben,112,Biology102,Prof. Gray
+29,Chloe,113,CS103,Prof. Green
+30,Diana,118,Math106,Prof. Taylor
+31,Ethan,119,History104,Prof. Johnson
+32,Fiona,120,Physics104,Prof. White
+33,Gary,121,CS105,Prof. Green
+34,Haley,122,Biology103,Prof. Gray
+35,Ian,123,History105,Prof. Johnson
+36,Jane,124,Math107,Prof. Taylor
+37,Kyle,125,Physics105,Prof. White
+38,Lila,126,CS106,Prof. Green
+39,Mike,121,CS105,Prof. Green  # Primary key violation
+40,Nina,127,Biology104,Prof. Gray
+41,Omar,128,History106,Prof. Johnson
+42,Penny,129,Math108,Prof. Taylor
+43,Ray,130,Physics106,Prof. White
+44,Sara,131,CS107,Prof. Green
+45,Tina,132,Biology105,Prof. Gray
+46,Ulysses,133,History107,Prof. Johnson
+47,Violet,134,Math109,Prof. Taylor
+48,Wyatt,135,Physics107,Prof. White
+49,Xenia,136,CS108,Prof. Green
+50,Zoe,137,Biology106,Prof. Gray
+51,Aaron,138,History108,Prof. Johnson
+52,Bella,139,Math110,Prof. Taylor
