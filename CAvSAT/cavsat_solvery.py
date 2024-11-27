@@ -124,13 +124,14 @@ if __name__ == "__main__":
     ]
 
     # Define a query: Find all students in Math courses
-    query = lambda record: "Math" in record[3]
+    query1 = lambda record: "Math" in record[3]
+    query2 = lambda record: "CS" in record[3] and "Prof. Brown" in record[4]
 
     # Initialize the CAvSAT system
     cavsat_system = CAvSAT(data, constraints)
 
     # Solve the SAT problem
-    sat_results = cavsat_system.solve(query)
+    sat_results1 = cavsat_system.solve(query1)
     
     # Simulate KW-SQL query
     # kw_sql_results = cavsat_system.kw_sql_simulation(query)
@@ -138,12 +139,12 @@ if __name__ == "__main__":
     # # Simulate ConQuer-SQL query
     # conquer_sql_results = cavsat_system.conquer_sql_simulation(query)
     
-    if sat_results:
-        print("SAT Query Results:")
-        for r in sat_results:
-            print(r)
-    else:
-        print("No satisfying solution found.")
+    # if sat_results1:
+    #     print("SAT Query Results:")
+    #     for r in sat_results1:
+    #         print(r)
+    # else:
+    #     print("No satisfying solution found.")
 
     # Simulate SQL-like query
     # sql_results = cavsat_system.sql_simulation(query)
@@ -158,10 +159,13 @@ if __name__ == "__main__":
     #     print(f"{method}: {time_taken:.4f} seconds")
 
     # Plot performance metrics
-    metrics = cavsat_system.get_metrics()
-    query_labels = ["Q1"]
-    encoding_Times = [metrics.get("Encoding Time", 0)]
-    SAT_Solving_Times = [metrics.get("SAT Solving Time", 0)]
+    metrics1 = cavsat_system.get_metrics()
+    sat_results2 = cavsat_system.solve(query2)
+    cavsat_system.print_performance_metrics()
+    metrics2 = cavsat_system.get_metrics()
+    query_labels = ["Q1", "Q2"]
+    encoding_Times = [metrics1.get("Encoding Time", 0), metrics2.get("Encoding Time", 0)]
+    SAT_Solving_Times = [metrics1.get("SAT Solving Time", 0), metrics2.get("SAT Solving Time", 0)]
 
     x = np.arange(len(query_labels))
 
