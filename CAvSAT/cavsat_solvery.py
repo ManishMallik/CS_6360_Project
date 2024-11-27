@@ -113,13 +113,13 @@ def load_data_from_csv(file_path):
 
 if __name__ == "__main__":
     # Load dataset from a CSV file
-    file_path = "Student_Course_Data.csv"  # Replace with your dataset file path
+    file_path = "dataset.csv"  # Replace with your dataset file path
     data = load_data_from_csv(file_path)
 
     # Define constraints: No two students can have the same StudentID for different courses
     constraints = [
         lambda record: not any(
-            r != record and r[0] == record[0] for r in data
+            r != record and r[0] == record[0] and r[2] == record[2] for r in data
         )
     ]
 
@@ -139,12 +139,12 @@ if __name__ == "__main__":
     # # Simulate ConQuer-SQL query
     # conquer_sql_results = cavsat_system.conquer_sql_simulation(query)
     
-    # if sat_results1:
-    #     print("SAT Query Results:")
-    #     for r in sat_results1:
-    #         print(r)
-    # else:
-    #     print("No satisfying solution found.")
+    if sat_results1:
+        print("SAT Query Results:")
+        for r in sat_results1:
+            print(r)
+    else:
+        print("No satisfying solution found.")
 
     # Simulate SQL-like query
     # sql_results = cavsat_system.sql_simulation(query)
