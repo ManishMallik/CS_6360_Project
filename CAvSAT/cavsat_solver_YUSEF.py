@@ -233,88 +233,82 @@ if __name__ == "__main__":
 
 
 
+    #YUSEF HERE. Instead of writing all the code 7 times to make a query I looped on all Queries
+
+    queries = [query1, query2, query3, query4, query5, query6, query7]
+
     # Initialize the CAvSAT system
     cavsat_system = CAvSAT(data, constraints)
 
-    # Solve the SAT problem
-    sat_results1 = cavsat_system.solve(query1)
-    
-    # Simulate KW-SQL query
-    kw_sql_results = cavsat_system.kw_sql_simulation(query1)
+    # Initialize arrays for performance metrics
+    encoding_times = []
+    solving_times = []
+    query_labels = []
 
-    # Simulate ConQuer-SQL query
-    conquer_sql_results = cavsat_system.conquer_sql_simulation(query1)
-    
-    if sat_results1:
-        print("SAT Query Results:")
-        for r in sat_results1:
-            print(r)
-            # Save the results to a CSV file
-            with open("sat_results.csv", mode='w') as file:
+    # Process all queries
+    for i, query in enumerate(queries, start=1):
+        print(f"\nProcessing Query {i}...")
+
+        # Solve the SAT problem
+        sat_results = cavsat_system.solve(query)
+        if sat_results:
+            # Uncomment if u want the print logs, WAAAAAY To many lol 
+            # print("SAT Query Results:")
+            # for r in sat_results:
+            #     print(r)
+
+            # Save SAT results to a CSV file
+            with open(f"query{i}_sat_results.csv", mode='w', newline="") as file:
                 writer = csv.writer(file)
-                # writer.writerow(header)
-                for record in sat_results1:
-                    writer.writerow(record)
-    else:
-        print("No satisfying solution found.")
+                writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+                writer.writerows(sat_results)
+        else:
+            print("No satisfying solution found.")
 
-    # Simulate SQL-like query
-    sql_results = cavsat_system.sql_simulation(query1)
-    print("\nSQL Query Results:")
-    for r in sql_results:
-        print(r)
+        # Simulate KW-SQL query
+        kw_sql_results = cavsat_system.kw_sql_simulation(query)
 
-    # Validate the integrity of the results
-    print("\nData Integrity Validation:")
-    print("SAT Query Results:", data_integrity_validation(sat_results1, constraints, query1))
-    print("KW-SQL Query Results:", data_integrity_validation(kw_sql_results, constraints, query1))
-    print("ConQuer-SQL Query Results:", data_integrity_validation(conquer_sql_results, constraints, query1))
-    print("SQL Query Results:", data_integrity_validation(sql_results, constraints, query1))
+        # Simulate ConQuer-SQL query
+        conquer_sql_results = cavsat_system.conquer_sql_simulation(query)
 
-    # Print performance metrics
-    cavsat_system.print_performance_metrics()
-    # print("\nPerformance Metrics:")
-    # for method, time_taken in metrics.items():
-    #     print(f"{method}: {time_taken:.4f} seconds")
+        # Simulate SQL-like query
+        sql_results = cavsat_system.sql_simulation(query)
+        # Uncomment if u want the print logs, WAAAAAY To many lol 
+        # print("\nSQL Query Results:")        
+        # for r in sql_results:
+        #     print(r)
+
+        # Validate results
+        print("\nData Integrity Validation:")
+        print("SAT Query Results:", data_integrity_validation(sat_results, constraints, query))
+        print("KW-SQL Query Results:", data_integrity_validation(kw_sql_results, constraints, query))
+        print("ConQuer-SQL Query Results:", data_integrity_validation(conquer_sql_results, constraints, query))
+        print("SQL Query Results:", data_integrity_validation(sql_results, constraints, query))
+
+        # Generate expected results for this query
+        output_file = f"query{i}_expected_results.csv"
+        generate_expected_results(data, query, output_file)
+
+        # Collect performance metrics
+        metrics = cavsat_system.get_metrics()
+        encoding_times.append(metrics.get("Encoding Time", 0))
+        solving_times.append(metrics.get("SAT Solving Time", 0))
+        query_labels.append(f"Q{i}")
 
     # Plot performance metrics
-    metrics1 = cavsat_system.get_metrics()
-    sat_results2 = cavsat_system.solve(query2)
-    cavsat_system.print_performance_metrics()
-    metrics2 = cavsat_system.get_metrics()
-    query_labels = ["Q1", "Q2"]
-    encoding_Times = [metrics1.get("Encoding Time", 0), metrics2.get("Encoding Time", 0)]
-    SAT_Solving_Times = [metrics1.get("SAT Solving Time", 0), metrics2.get("SAT Solving Time", 0)]
-
     x = np.arange(len(query_labels))
-
-    fig, ax = plt.subplots()
     bar_width = 0.35
 
-    ax.bar(x, encoding_Times, bar_width, label='Encoding Time')
-    ax.bar(x, SAT_Solving_Times, bar_width, label='SAT Solving Time', bottom=encoding_Times)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(x, encoding_times, bar_width, label='Encoding Time')
+    ax.bar(x, solving_times, bar_width, bottom=encoding_times, label='SAT Solving Time')
 
     ax.set_xlabel('Queries')
     ax.set_ylabel('Time (seconds)')
-    ax.set_title('Performance Metrics')
+    ax.set_title('Performance Metrics by Query')
     ax.set_xticks(x)
     ax.set_xticklabels(query_labels)
     ax.legend()
 
+    plt.tight_layout()
     plt.show()
-    
-
-    # methods = ["SAT Solving", "KW-SQL Simulation", "ConQuer-SQL Simulation"]
-    # times = [
-    #     metrics.get("SAT Solving Time", 0),
-    #     metrics.get("KW-SQL Simulation Time", 0),
-    #     metrics.get("ConQuer-SQL Simulation Time", 0),
-    # ]
-
-    # plt.figure(figsize=(8, 6))
-    # plt.bar(methods, times, color='skyblue')
-    # plt.xlabel('Methods')
-    # plt.ylabel('Time (seconds)')
-    # plt.title('Performance Metrics')
-    # plt.show()
-
