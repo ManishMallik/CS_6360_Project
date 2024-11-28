@@ -69,7 +69,10 @@ class CAvSAT:
 
     def kw_sql_simulation(self, query):
         start_time = time.time()
-        result = [record for record in self.data if query(record)]
+        result = []
+        for record in self.data:
+            if query(record) and all(constraint(record) for constraint in self.constraints):
+                result.append(record)
         end_time = time.time()
 
         self.performance_metrics["KW-SQL Simulation Time"] = end_time - start_time
@@ -77,10 +80,10 @@ class CAvSAT:
 
     def conquer_sql_simulation(self, query):
         start_time = time.time()
-        result = [record for record in self.data if query(record)]
+        result = [record for record in self.data if query(record) and all(constraint(record) for constraint in self.constraints)]
         end_time = time.time()
 
-        self.performance_metrics["SQL Simulation Time"] = end_time - start_time
+        self.performance_metrics["ConQuer-SQL Simulation Time"] = end_time - start_time
         return result
     
     def sql_simulation(self, query):
@@ -88,7 +91,7 @@ class CAvSAT:
         result = [record for record in self.data if query(record)]
         end_time = time.time()
 
-        self.performance_metrics["ConQuer-SQL Simulation Time"] = end_time - start_time
+        self.performance_metrics["SQL Simulation Time"] = end_time - start_time
         return result
 
     def print_performance_metrics(self):
@@ -231,17 +234,17 @@ if __name__ == "__main__":
 
     plt.show()
 
-    # methods = ["SAT Solving", "KW-SQL Simulation", "ConQuer-SQL Simulation"]
-    # times = [
-    #     metrics.get("SAT Solving Time", 0),
-    #     metrics.get("KW-SQL Simulation Time", 0),
-    #     metrics.get("ConQuer-SQL Simulation Time", 0),
-    # ]
+    methods = ["SAT Solving", "KW-SQL Simulation", "ConQuer-SQL Simulation"]
+    times = [
+        metrics1.get("SAT Solving Time", 0),
+        metrics1.get("KW-SQL Simulation Time", 0),
+        metrics1.get("ConQuer-SQL Simulation Time", 0),
+    ]
 
-    # plt.figure(figsize=(8, 6))
-    # plt.bar(methods, times, color='skyblue')
-    # plt.xlabel('Methods')
-    # plt.ylabel('Time (seconds)')
-    # plt.title('Performance Metrics')
-    # plt.show()
+    plt.figure(figsize=(8, 6))
+    plt.bar(methods, times, color='skyblue')
+    plt.xlabel('Methods')
+    plt.ylabel('Time (seconds)')
+    plt.title('Performance Metrics')
+    plt.show()
 
