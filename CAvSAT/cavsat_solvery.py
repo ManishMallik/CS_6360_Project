@@ -110,10 +110,18 @@ def load_data_from_csv(file_path):
             data.append(record)
     return data
 
+def data_integrity_validation(results, constraints, query):
+    for record in results:
+        for constraint in constraints:
+            if not constraint(record):
+                return False
+        if not query(record):
+            return False
+    return True
 
 if __name__ == "__main__":
     # Load dataset from a CSV file
-    file_path = "dataset.csv"  # Replace with your dataset file path
+    file_path = "Student_Course_Data.csv"  # Replace with your dataset file path
     data = load_data_from_csv(file_path)
 
     # Define constraints: No two students can have the same StudentID for different courses
@@ -147,10 +155,17 @@ if __name__ == "__main__":
         print("No satisfying solution found.")
 
     # Simulate SQL-like query
-    # sql_results = cavsat_system.sql_simulation(query)
-    # print("\nSQL Query Results:")
-    # for r in sql_results:
-    #     print(r)
+    sql_results = cavsat_system.sql_simulation(query1)
+    print("\nSQL Query Results:")
+    for r in sql_results:
+        print(r)
+
+    # Validate the integrity of the results
+    print("\nData Integrity Validation:")
+    print("SAT Query Results:", data_integrity_validation(sat_results1, constraints, query1))
+    # print("KW-SQL Query Results:", data_integrity_validation(kw_sql_results, constraints, query))
+    # print("ConQuer-SQL Query Results:", data_integrity_validation(conquer_sql_results, constraints, query))
+    print("SQL Query Results:", data_integrity_validation(sql_results, constraints, query1))
 
     # Print performance metrics
     cavsat_system.print_performance_metrics()
