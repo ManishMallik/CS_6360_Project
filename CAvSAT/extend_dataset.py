@@ -1,57 +1,102 @@
-import csv
 import random
+import pandas as pd
 
-# Define the base structure
-students = [
-    "Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Hank", "Ivy", "Jack",
-    "Karen", "Liam", "Mia", "Noah", "Olivia", "Paul", "Quinn", "Rachel", "Steve", "Tracy",
-    "Uma", "Vera", "Will", "Xander", "Yara", "Zane", "Alex", "Ben", "Chloe", "Diana",
-    "Ethan", "Fiona", "Gary", "Haley", "Ian", "Jane", "Kyle", "Lila", "Mike", "Nina",
-    "Omar", "Penny", "Ray", "Sara", "Tina", "Ulysses", "Violet", "Wyatt", "Xenia", "Zoe",
-    "Aaron", "Bella"
-]
-courses = [
-    (101, "Math101", "Prof. Smith"), (102, "CS101", "Prof. Brown"), (103, "Physics101", "Prof. White"),
-    (104, "History101", "Prof. Johnson"), (105, "Math102", "Prof. Taylor"), (106, "CS102", "Prof. Green"),
-    (107, "Math103", "Prof. Taylor"), (108, "Biology101", "Prof. Gray"), (109, "Math104", "Prof. Smith"),
-    (110, "History102", "Prof. Johnson"), (111, "Physics102", "Prof. White"), (112, "Biology102", "Prof. Gray"),
-    (113, "CS103", "Prof. Green"), (114, "History103", "Prof. Johnson"), (115, "Math105", "Prof. Taylor"),
-    (116, "Physics103", "Prof. White"), (117, "CS104", "Prof. Green"), (118, "Math106", "Prof. Taylor"),
-    (119, "History104", "Prof. Johnson"), (120, "Physics104", "Prof. White"), (121, "CS105", "Prof. Green"),
-    (122, "Biology103", "Prof. Gray"), (123, "History105", "Prof. Johnson"), (124, "Math107", "Prof. Taylor"),
-    (125, "Physics105", "Prof. White"), (126, "CS106", "Prof. Green"), (127, "Biology104", "Prof. Gray"),
-    (128, "History106", "Prof. Johnson"), (129, "Math108", "Prof. Taylor"), (130, "Physics106", "Prof. White"),
-    (131, "CS107", "Prof. Green"), (132, "Biology105", "Prof. Gray"), (133, "History107", "Prof. Johnson"),
-    (134, "Math109", "Prof. Taylor"), (135, "Physics107", "Prof. White"), (136, "CS108", "Prof. Green"),
-    (137, "Biology106", "Prof. Gray"), (138, "History108", "Prof. Johnson"), (139, "Math110", "Prof. Taylor")
+# Define lists of possible first and last names
+first_names = [
+    "Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Hank", "Ivy", "Jack", "Karen", "Liam", "Mia", "Noah",
+    "Olivia", "Paul", "Quinn", "Rachel", "Steve", "Tracy", "Uma", "Vera", "Will", "Xander", "Yara", "Zane", "Aaron",
+    "Bella", "Caleb", "Diana", "Ethan", "Fiona", "George", "Hazel", "Ian", "Julia", "Kyle", "Laura", "Mark", "Nina",
+    "Oscar", "Penny", "Quincy", "Rose", "Sam", "Tina", "Ulysses", "Victor", "Wendy", "Xavier", "Yvonne", "Zoe",
+    "Bryan", "Cindy", "Dennis", "Elena", "Freddie", "Gina", "Harold", "Irene", "Justin", "Kimberly", "Leon", "Monica",
+    "Nathan", "Omar", "Peter", "Ruby", "Sebastian", "Tara", "Uriel", "Vanessa", "Wesley", "Ximena", "Yosef", "Zelda",
+    "Clara", "Derek", "Emma", "Felix", "Gloria", "Harry", "Isla", "Jasper", "Katie", "Lukas", "Maddie", "Nate", "Olga",
+    "Patrick", "Rita", "Sophia", "Theo", "Ursula", "Vince", "Wyatt", "Xena", "Yasmine", "Zack", "Adrian", "Bianca",
+    "Charlie", "Dana", "Elliot", "Frances", "Gareth", "Helen", "Isaac", "Jackie", "Kieran", "Lena", "Milo", "Nancy",
+    "Ophelia", "Philip", "Renee", "Simone", "Tim", "Uriah", "Valerie", "Winston", "Yvette", "Zoey"
 ]
 
-# Generate 10,000 unique entries
-def generate_dataset(file_name, num_entries):
-    used_ids = set()  # Track unique (StudentID, CourseID) pairs
-    with open(file_name, mode="w", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
-        
-        student_count = len(students)
-        course_count = len(courses)
-        
-        for _ in range(num_entries):
-            # Randomly assign StudentID and CourseID
-            while True:
-                student_id = random.randint(1, student_count)
-                course = random.choice(courses)
-                course_id = course[0]
-                # Ensure unique (StudentID, CourseID) pair
-                if (student_id, course_id) not in used_ids:
-                    used_ids.add((student_id, course_id))
-                    break
-            
-            student_name = students[student_id - 1]
-            course_name, instructor = course[1], course[2]
-            
-            # Write the entry to the file
-            writer.writerow([student_id, student_name, course_id, course_name, instructor])
+last_names = [
+    "Smith", "Johnson", "Brown", "Taylor", "White", "Green", "Gray", "Williams", "Jones", "Davis", "Miller", "Wilson",
+    "Moore", "Anderson", "Thomas", "Jackson", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", 
+    "Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall", "Allen", "Young", "King", "Wright", "Scott", "Adams",
+    "Carter", "Evans", "Turner", "Torres", "Nelson", "Baker", "Perez", "Campbell", "Mitchell", "Roberts", "Gonzalez",
+    "Foster", "Howard", "Morris", "Bell", "Reed", "Cook", "Rogers", "Morgan", "Cooper", "Peterson", "Flores", "Kelly",
+    "Parker", "Ward", "Cruz", "Bailey", "Reyes", "Hughes", "Price", "Myers", "Long", "Fisher", "Sanders", "Barnes",
+    "Ross", "Henderson", "Coleman", "Jenkins", "Perry", "Powell", "Russell", "Sullivan", "Ortiz", "Jenkins", "Griffin"
+]
 
-# Generate a dataset with 10,000 entries
-generate_dataset("large_dataset.csv", 10000)
+prof_last_names = [
+    "Smith", "Johnson", "Brown", "Taylor", "White", "Green", "Gray", "Williams", "Jones", "Davis", "Miller", "Wilson",
+]
+
+subjects = ["Math", "CS", "Physics", "History", "Biology", "English"]
+instructors = [f"Prof. {ln}" for ln in prof_last_names]
+
+print(f"First names: {len(first_names)}")
+print(f"Last names: {len(last_names)}")
+print(len(first_names) * len(last_names))
+
+# Generate unique CourseID based on CourseName and Instructor
+course_mapping = {}
+course_id_counter = 101
+
+def get_course_id(course_name, instructor):
+    global course_id_counter
+    key = (course_name, instructor)
+    if key not in course_mapping:
+        course_mapping[key] = course_id_counter
+        course_id_counter += 1
+    return course_mapping[key]
+
+# Pre-generate unique StudentName pool
+student_name_pool = [f"{fn} {ln}" for fn in first_names for ln in last_names]
+random.shuffle(student_name_pool)
+
+# Map to ensure unique StudentID to StudentName relationship
+student_id_to_name = {i: f"{random.choice(first_names)} {random.choice(last_names)}" for i in range(1, 7001)}
+
+def get_unique_student_name(student_id):
+    if student_id not in student_id_to_name:
+        if not student_name_pool:
+            raise ValueError("Ran out of unique names!")
+        name = student_name_pool.pop()
+        student_id_to_name[student_id] = name
+    return student_id_to_name[student_id]
+
+# Generate unique dataset with primary key violations
+total_entries = 10000
+violation_percentage = random.uniform(0.1, 0.25)
+violation_count = int(total_entries * violation_percentage)
+unique_count = total_entries - violation_count
+
+unique_entries = set()
+while len(unique_entries) < unique_count:
+    student_id = random.randint(1, 7000)  # Keep StudentID within a realistic range
+    student_name = get_unique_student_name(student_id)
+    course_name = f"{random.choice(subjects)}{random.randint(101, 199)}"
+    instructor = random.choice(instructors)
+    course_id = get_course_id(course_name, instructor)
+    if (student_id, course_name) not in {(s[0], s[3]) for s in unique_entries}:
+        unique_entries.add((student_id, student_name, course_id, course_name, instructor))
+
+# Generate primary key violation entries
+unique_entries = list(unique_entries)
+violation_entries = []
+for _ in range(violation_count):
+    entry = random.choice(unique_entries)
+    student_id, student_name, course_id, course_name, instructor = entry
+    # Keep StudentID and CourseName the same to ensure primary key violation
+    violation_instructor = random.choice([i for i in instructors if i != instructor])
+    violation_course_id = get_course_id(course_name, violation_instructor)
+    violation_entries.append((student_id, student_name, violation_course_id, course_name, violation_instructor))
+
+# Combine all entries
+all_entries = unique_entries + violation_entries
+
+# Convert to DataFrame
+columns = ["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"]
+df = pd.DataFrame(all_entries, columns=columns)
+
+# Save to CSV
+df.to_csv("expanded_dataset.csv", index=False)
+print("Dataset generated and saved as 'expanded_dataset.csv'")
