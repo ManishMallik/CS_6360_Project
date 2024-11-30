@@ -360,7 +360,7 @@ if __name__ == "__main__":
         # Accuracy results against the first set of expected results
         with open(f"query{i}_accuracy_results.csv", mode='w', newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["Accuracy Results against 1st set of Expected Results (where for multiple records with the same primary key, keep the first instance and disregard the rest of the records)"])
+            # writer.writerow(["Accuracy Results against 1st set of Expected Results (where for multiple records with the same primary key, keep the first instance and disregard the rest of the records)"])
             writer.writerow(["Method", "Accuracy"])
             writer.writerow(["SAT", sat_accuracy])
             writer.writerow(["KW-SQL", kw_sql_accuracy])
@@ -370,7 +370,7 @@ if __name__ == "__main__":
         # Accuracy results against the second set of expected results
         with open(f"query{i}_accuracy_results_2.csv", mode='w', newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["Accuracy Results against 2nd set of Expected Results (where for any multiple records with the same primary key, disregard all of those records)"])
+            # writer.writerow(["Accuracy Results against 2nd set of Expected Results (where for any multiple records with the same primary key, disregard all of those records)"])
             writer.writerow(["Method", "Accuracy"])
             writer.writerow(["SAT", sat_accuracy_2])
             writer.writerow(["KW-SQL", kw_sql_accuracy_2])
