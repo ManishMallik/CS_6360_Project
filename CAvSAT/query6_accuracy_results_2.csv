@@ -1,0 +1,6 @@
+"Accuracy Results against 2nd set of Expected Results (where for any multiple records with the same primary key, disregard all of those records)"
+Method,Accuracy
+SAT,1.0
+KW-SQL,1.0
+ConQuer-SQL,1.0
+SQL,0.6319223985890653

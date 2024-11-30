@@ -1,3 +1,4 @@
+"Accuracy Results against 1st set of Expected Results (where for multiple records with the same primary key, keep the first instance and disregard the rest of the records)"
 Method,Accuracy
 SAT,0.7212157809983897
 KW-SQL,0.7212157809983897

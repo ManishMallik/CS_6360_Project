@@ -152,11 +152,7 @@ if __name__ == "__main__":
         )
     ]
 
-    # Define a query: Find all students in Math courses
-    # query1 = lambda record: "Math" in record[3]
-    # query2 = lambda record: "CS" in record[3] and "Prof. Brown" in record[4]
-
-    # YUSEF HERE. ADDED MORE QUERIES: (I COMMENTED 1 and 2 but didn't go over your old code :) )
+    # Example queries
     # Find all students in Math courses
     query1 = lambda record: "Math" in record[3]
 
@@ -178,13 +174,11 @@ if __name__ == "__main__":
     # Find all students whose names contain "Taylor" (supports flexible searches)
     query7 = lambda record: "Taylor" in record[1]
 
-    # YUSEF HERE. ADDED MORE QUERIES:
-
-    # YUSEF HERE. ADDED CODE TO GENERATE EXPECTED RESULTS
+    # Function to generate expected results for each query (Method 1)
     def generate_expected_results(data, query, output_file, primary_key_index=(0, 3)):
         """
         Generate and save expected results for a given query, resolving primary key conflicts.
-        I decided to go with just keeping the first instance of a key that has a conflict.
+        Keep the first instance of a key that has a conflict.
 
         ie. 
         StudentID,StudentName,CourseID,CourseName,Instructor
@@ -215,7 +209,8 @@ if __name__ == "__main__":
 
         print(f"Expected results written to {output_file}")
 
-    # MANISH HERE. ADDED CODE TO GENERATE EXPECTED RESULTS (Method 2)
+    # Function to generate expected results for each query (Method 2)
+    # Unlike the previous function (Method 1), this function filters out all of the records that violate primary key constraints
     def generate_expected_results_2(data, query, output_file, primary_key_index=(0, 3)):
         seen_primary_keys = set()
         filtered_results = []
@@ -260,11 +255,7 @@ if __name__ == "__main__":
     generate_expected_results_2(data, query6, "query6_expected_results_2.csv")
     generate_expected_results_2(data, query7, "query7_expected_results_2.csv")
 
-    # YUSEF HERE. ADDED CODE TO GENERATE EXPECTED RESULTS
-
-
-    #YUSEF HERE. Instead of writing all the code 7 times to make a query I looped on all Queries
-
+    # Store all queries in a list
     queries = [query1, query2, query3, query4, query5, query6, query7]
 
     # Initialize the CAvSAT system
@@ -339,17 +330,20 @@ if __name__ == "__main__":
         expected_results = load_data_from_csv(output_file)
         expected_results_2 = load_data_from_csv(output_file_2)
 
-        # Calculate accuracy for each method
+        # Calculate accuracy against each set of expected results
+        # 1st set of expected results: For multiple records with the same primary key, keep the first instance and disregard the rest of the records
         sat_accuracy = accuracy(sat_results, expected_results)
         kw_sql_accuracy = accuracy(kw_sql_results, expected_results)
         conquer_sql_accuracy = accuracy(conquer_sql_results, expected_results)
         sql_accuracy = accuracy(sql_results, expected_results)
 
+        # 2nd set of expected results: For any multiple records with the same primary key, disregard all of those records
         sat_accuracy_2 = accuracy(sat_results, expected_results_2)
         kw_sql_accuracy_2 = accuracy(kw_sql_results, expected_results_2)
         conquer_sql_accuracy_2 = accuracy(conquer_sql_results, expected_results_2)
         sql_accuracy_2 = accuracy(sql_results, expected_results_2)
 
+        # Compare the accuracies of each of the methods
         print("\nAccuracy Comparison Method 1:")
         print(f"SAT Accuracy: {sat_accuracy:.4f}")
         print(f"KW-SQL Accuracy: {kw_sql_accuracy:.4f}")
@@ -363,13 +357,25 @@ if __name__ == "__main__":
         print(f"SQL Accuracy: {sql_accuracy_2:.4f}")
 
         # Save the accuracy results to a CSV file
+        # Accuracy results against the first set of expected results
         with open(f"query{i}_accuracy_results.csv", mode='w', newline="") as file:
             writer = csv.writer(file)
+            writer.writerow(["Accuracy Results against 1st set of Expected Results (where for multiple records with the same primary key, keep the first instance and disregard the rest of the records)"])
             writer.writerow(["Method", "Accuracy"])
             writer.writerow(["SAT", sat_accuracy])
             writer.writerow(["KW-SQL", kw_sql_accuracy])
             writer.writerow(["ConQuer-SQL", conquer_sql_accuracy])
             writer.writerow(["SQL", sql_accuracy])
+        
+        # Accuracy results against the second set of expected results
+        with open(f"query{i}_accuracy_results_2.csv", mode='w', newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Accuracy Results against 2nd set of Expected Results (where for any multiple records with the same primary key, disregard all of those records)"])
+            writer.writerow(["Method", "Accuracy"])
+            writer.writerow(["SAT", sat_accuracy_2])
+            writer.writerow(["KW-SQL", kw_sql_accuracy_2])
+            writer.writerow(["ConQuer-SQL", conquer_sql_accuracy_2])
+            writer.writerow(["SQL", sql_accuracy_2])
 
         # Collect performance metrics
         metrics = cavsat_system.get_metrics()
