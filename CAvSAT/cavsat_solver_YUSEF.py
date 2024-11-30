@@ -63,22 +63,6 @@ class CAvSAT:
 
         return answers
 
-    # def kw_sql_simulation(self, query):
-    #     start_time = time.time()
-    #     result = [record for record in self.data if query(record)]
-    #     end_time = time.time()
-
-    #     self.performance_metrics["KW-SQL Simulation Time"] = end_time - start_time
-    #     return result
-
-    # def conquer_sql_simulation(self, query):
-    #     start_time = time.time()
-    #     result = [record for record in self.data if query(record)]
-    #     end_time = time.time()
-
-    #     self.performance_metrics["SQL Simulation Time"] = end_time - start_time
-    #     return result
-
     def kw_sql_simulation(self, query):
         start_time = time.time()
         result = []
@@ -97,62 +81,6 @@ class CAvSAT:
 
         self.performance_metrics["ConQuer-SQL Simulation Time"] = end_time - start_time
         return result
-
-    # def kw_sql_simulation(self, query):
-    #     start_time = time.time()
-    #     # Step 1: Identify violating primary keys
-    #     primary_key_indices = (0, 3)  # Assuming primary key is (StudentID, CourseName)
-    #     key_counts = {}
-    #     for record in self.data:
-    #         key = tuple(record[i] for i in primary_key_indices)
-    #         key_counts[key] = key_counts.get(key, 0) + 1
-
-    #     violating_keys = {key for key, count in key_counts.items() if count > 1}
-
-    #     # Step 2: Rewrite the query to exclude violating keys
-    #     def rewritten_query(record):
-    #         key = tuple(record[i] for i in primary_key_indices)
-    #         return query(record) and key not in violating_keys
-
-    #     rewriting_end_time = time.time()
-    #     self.performance_metrics["KW-SQL Rewriting Time"] = rewriting_end_time - start_time
-
-    #     # Step 3: Evaluate the rewritten query
-    #     evaluation_start_time = time.time()
-    #     result = [record for record in self.data if rewritten_query(record)]
-    #     evaluation_end_time = time.time()
-    #     self.performance_metrics["KW-SQL Evaluation Time"] = evaluation_end_time - evaluation_start_time
-    #     self.performance_metrics["KW-SQL Simulation Time"] = self.performance_metrics["KW-SQL Rewriting Time"] + self.performance_metrics["KW-SQL Evaluation Time"]
-
-    #     return result
-
-    # def conquer_sql_simulation(self, query):
-    #     start_time = time.time()
-    #     # Identify violating keys (same as KW-SQL)
-    #     primary_key_indices = (0, 3)
-    #     key_counts = {}
-    #     for record in self.data:
-    #         key = tuple(record[i] for i in primary_key_indices)
-    #         key_counts[key] = key_counts.get(key, 0) + 1
-
-    #     violating_keys = {key for key, count in key_counts.items() if count > 1}
-
-    #     # Rewrite the query according to ConQuer method
-    #     def rewritten_query(record):
-    #         key = tuple(record[i] for i in primary_key_indices)
-    #         return query(record) and key not in violating_keys
-
-    #     rewriting_end_time = time.time()
-    #     self.performance_metrics["ConQuer-SQL Rewriting Time"] = rewriting_end_time - start_time
-
-    #     # Evaluate the rewritten query
-    #     evaluation_start_time = time.time()
-    #     result = [record for record in self.data if rewritten_query(record)]
-    #     evaluation_end_time = time.time()
-    #     self.performance_metrics["ConQuer-SQL Evaluation Time"] = evaluation_end_time - evaluation_start_time
-    #     self.performance_metrics["ConQuer-SQL Simulation Time"] = self.performance_metrics["ConQuer-SQL Rewriting Time"] + self.performance_metrics["ConQuer-SQL Evaluation Time"]
-
-    #     return result
     
     def sql_simulation(self, query):
         start_time = time.time()
@@ -196,10 +124,6 @@ def accuracy(method_results, correct_results):
     true_positives = len(set(method_results).intersection(set(correct_results)))
     false_positives = len(set(method_results) - set(correct_results))
     false_negatives = len(set(correct_results) - set(method_results))
-    
-    # Not sure if we need to include true negatives when trying to calculate accuracy
-    # This could also be inaccurate
-    # true_negatives = len(correct_results) - (false_positives + false_negatives)
 
     # Did not include true_negatives here since we want to check if method results
     # are the same as the correct results and only penalize if there are false positives
@@ -361,11 +285,7 @@ if __name__ == "__main__":
         # Solve the SAT problem
         sat_results = cavsat_system.solve(query)
         if sat_results:
-            # Uncomment if u want the print logs, WAAAAAY To many lol 
-            # print("SAT Query Results:")
-            # for r in sat_results:
-            #     print(r)
-
+            
             # Save SAT results to a CSV file
             with open(f"query{i}_sat_results.csv", mode='w', newline="") as file:
                 writer = csv.writer(file)
@@ -376,31 +296,31 @@ if __name__ == "__main__":
 
         # Simulate KW-SQL query
         kw_sql_results = cavsat_system.kw_sql_simulation(query)
-        # if kw_sql_results:
+        if kw_sql_results:
 
-        #     # Save KW-SQL results to a CSV file
-        #     with open(f"query{i}_kw_sql_results.csv", mode='w', newline="") as file:
-        #         writer = csv.writer(file)
-        #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
-        #         writer.writerows(kw_sql_results)
+            # Save KW-SQL results to a CSV file
+            with open(f"query{i}_kw_sql_rewriting_results.csv", mode='w', newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+                writer.writerows(kw_sql_results)
 
         # Simulate ConQuer-SQL query
         conquer_sql_results = cavsat_system.conquer_sql_simulation(query)
-        # if conquer_sql_results:
-        #     # Save ConQuer-SQL results to a CSV file
-        #     with open(f"query{i}_conquer_sql_results.csv", mode='w', newline="") as file:
-        #         writer = csv.writer(file)
-        #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
-        #         writer.writerows(conquer_sql_results)
+        if conquer_sql_results:
+            # Save ConQuer-SQL results to a CSV file
+            with open(f"query{i}_conquer_sql_rewriting_results.csv", mode='w', newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+                writer.writerows(conquer_sql_results)
 
         # Simulate SQL-like query
         sql_results = cavsat_system.sql_simulation(query)
-        # if sql_results:
-        #     # Save SQL results to a CSV file
-        #     with open(f"query{i}_sql_results.csv", mode='w', newline="") as file:
-        #         writer = csv.writer(file)
-        #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
-        #         writer.writerows(sql_results)
+        if sql_results:
+            # Save SQL results to a CSV file
+            with open(f"query{i}_regular_sql_retrieval_results.csv", mode='w', newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+                writer.writerows(sql_results)
 
         # Validate results
         print("\nData Integrity Validation:")
