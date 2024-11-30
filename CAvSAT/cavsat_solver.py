@@ -188,25 +188,32 @@ if __name__ == "__main__":
     ]
 
     # Example queries
-    # Find all students in Math courses
+    # Find all records consisting of students enrolled in Math courses
+    # Represents following SQL statement: SELECT * FROM data WHERE CourseName LIKE 'Math%'
     query1 = lambda record: "Math" in record[3]
 
-    # Find all students in CS courses taught by Prof. Brown
+    # Find all records consisting of students enrolled in CS courses taught by Prof. Brown
+    # Represents following SQL statement: SELECT * FROM data WHERE CourseName LIKE 'CS%' AND Instructor = 'Prof. Brown'
     query2 = lambda record: "CS" in record[3] and "Prof. Brown" in record[4]
 
-    # Find students whose CourseID is even (creative use of numeric fields)
+    # Find all records whose CourseID is even (creative use of numeric fields)
+    # Represents following SQL statement: SELECT * FROM data WHERE CourseID % 2 = 0
     query3 = lambda record: int(record[2]) % 2 == 0
 
-    # Find students whose names start with the letter 'K' (e.g., Kimberly Reyes)
+    # Find all records consisting of students whose names start with the letter 'K' (e.g., Kimberly Reyes)
+    # Represents following SQL statement: SELECT * FROM data WHERE StudentName LIKE 'K%'
     query4 = lambda record: record[1].startswith("K")
 
-    # Find courses taught by multiple instructors (hypothetical scenario)
+    # Find all records consisting of courses taught by one of the following professor names
+    # Represents following SQL statement: SELECT * FROM data WHERE Instructor = "Prof. Jones" OR Instructor = "Prof. Wilson"
     query5 = lambda record: record[4] in ["Prof. Jones", "Prof. Wilson"]
 
-    # Find students enrolled in courses with IDs greater than 2000
+    # Find all records consisting of CourseIDs that are greater than 2000
+    # Represents following SQL statement: SELECT * FROM data WHERE CourseID > 2000
     query6 = lambda record: int(record[2]) > 2000
 
-    # Find all students whose names contain "Taylor" (supports flexible searches)
+    # Find all records consisting of students whose names contain "Taylor" (supports flexible searches, can be first or last name)
+    # Represents following SQL statement: SELECT * FROM data WHERE StudentName LIKE %Taylor%
     query7 = lambda record: "Taylor" in record[1]
 
     # Function to generate expected results for each query (Method 1)
