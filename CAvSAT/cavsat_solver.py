@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class CAvSAT:
+    
+    # Initialize the CAvSAT system with data and constraints
     def __init__(self, data, constraints):
         self.data = data
         self.constraints = constraints
@@ -13,6 +15,7 @@ class CAvSAT:
         self.result = []
         self.performance_metrics = {}
 
+    # Encode the data and constraints into SAT variables and clauses
     def encode(self):
         start_time = time.time()
 
@@ -29,11 +32,17 @@ class CAvSAT:
                     self.clauses.append([self.variables[record]])
 
         end_time = time.time()
+        
+        # Record the encoding time in the performance metrics
         self.performance_metrics["Encoding Time"] = end_time - start_time
 
+    # Solve the SAT problem and extract answers
     def solve(self, query):
+        
+        # Encode the data and constraints
         self.encode()
 
+        # Start the SAT solving process
         start_time = time.time()
         solver = Glucose3()
         solver.append_formula(self.clauses)
@@ -43,9 +52,13 @@ class CAvSAT:
             self.result = None
         end_time = time.time()
 
+        # Update the performance metrics with the SAT solving time
         self.performance_metrics["SAT Solving Time"] = end_time - start_time
+        
+        # Extract answers based on the query
         return self.extract_answers(query)
 
+    # Extract answers that satisfy the query
     def extract_answers(self, query):
         if not self.result:
             return None
@@ -53,17 +66,24 @@ class CAvSAT:
         start_time = time.time()
         answers = set()
         for solution in self.result:
-            if solution > 0:  # Positive variable means the record is included
+            # Positive variable means the record is included
+            if solution > 0:
                 for record, index in self.variables.items():
                     if index == solution and query(record):
                         answers.add(record)
         end_time = time.time()
+        
+        # Update the SAT solving time with the query extraction time
         self.performance_metrics["Query Extraction Time"] = end_time - start_time
         self.performance_metrics["SAT Solving Time"] += end_time - start_time
-
+        
+        # Return the answers
         return answers
 
+    # KW-SQL-Rewriting simulation
     def kw_sql_simulation(self, query):
+        
+        # Start the KW-SQL simulation
         start_time = time.time()
         result = []
         for record in self.data:
@@ -71,45 +91,58 @@ class CAvSAT:
                 result.append(record)
         end_time = time.time()
 
+        # Record the KW-SQL simulation time in the performance metrics
         self.performance_metrics["KW-SQL Simulation Time"] = end_time - start_time
         return result
 
+    # ConQuer-SQL-Rewriting simulation
     def conquer_sql_simulation(self, query):
+        
+        # Start the ConQuer-SQL simulation
         start_time = time.time()
         result = [record for record in self.data if query(record) and all(constraint(record) for constraint in self.constraints)]
         end_time = time.time()
 
+        # Record the ConQuer-SQL simulation time in the performance metrics
         self.performance_metrics["ConQuer-SQL Simulation Time"] = end_time - start_time
         return result
     
+    # Regular SQL retrieval simulation
     def sql_simulation(self, query):
+        
+        # Start the SQL simulation
         start_time = time.time()
         result = [record for record in self.data if query(record)]
         end_time = time.time()
 
+        # Record the SQL simulation time in the performance metrics
         self.performance_metrics["SQL Simulation Time"] = end_time - start_time
         return result
 
+    # Print the performance metrics
     def print_performance_metrics(self):
         print("Performance Metrics:")
         for key, value in self.performance_metrics.items():
             print(f"{key}: {value:.4f} seconds")
 
+    # Get the performance metrics
     def get_metrics(self):
         return self.performance_metrics
 
-
+# Function to load data from a CSV file
 def load_data_from_csv(file_path):
     data = []
     with open(file_path, mode='r') as file:
         reader = csv.reader(file)
-        header = next(reader)  # Skip header row
+        
+        # Skip header row
+        header = next(reader)
         for row in reader:
             record = tuple(row)
             data.append(record)
     return data
 
-# I tested this function with the following constraints and query, it works fine.
+# Function to validate data consistency and integrity of results based on constraints and query
 def data_integrity_validation(results, constraints, query):
     for record in results:
         for constraint in constraints:
@@ -140,12 +173,14 @@ def compare_method_results(method1results, method2results, method1Name, method2N
     }
     return same_results, different_results
 
+# Main function
 if __name__ == "__main__":
     # Load dataset from a CSV file
     file_path = "dataset.csv"
     data = load_data_from_csv(file_path)
 
-    # Define constraints: No two students can have the same StudentID for different courses
+    # Define constraints: No two records should have the same StudentID and CourseName
+    # In the real world, a student cannot take the same course twice during the same semester
     constraints = [
         lambda record: not any(
             r != record and r[0] == record[0] and r[3] == record[3] for r in data
@@ -386,7 +421,7 @@ if __name__ == "__main__":
         sql_times.append(metrics.get("SQL Simulation Time", 0))
         query_labels.append(f"Q{i}")
 
-    # Plot performance metrics
+    # Plot performance metrics of encoding time and SAT solving time for each query
     x = np.arange(len(query_labels))
     bar_width = 0.35
 
@@ -404,7 +439,7 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-    # Plot performance metrics for SAT Solving vs KW-SQL vs ConQuer-SQL
+    # Plot performance metrics for SAT Solving vs KW-SQL-Rewriting vs ConQuer-SQL-Rewriting vs Regular SQL Retrieval
     fig, ax = plt.subplots(figsize=(10, 6))
     x = np.arange(len(query_labels))
     ax.plot(x, solving_times, label='SAT Solving Time', marker='o', linestyle='-', color='b')
