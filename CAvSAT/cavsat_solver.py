@@ -356,19 +356,24 @@ if __name__ == "__main__":
                 writer.writerows(sql_results)
 
         # Validate results
-        print("\nData Integrity Validation:")
-        print("SAT Query Results:", data_integrity_validation(sat_results, constraints, query))
-        print("KW-SQL Query Results:", data_integrity_validation(kw_sql_results, constraints, query))
-        print("ConQuer-SQL Query Results:", data_integrity_validation(conquer_sql_results, constraints, query))
-        print("SQL Query Results:", data_integrity_validation(sql_results, constraints, query))
+        print("\nData Integrity Validation (are the consistency and integrity of the results maintained?):")
+        print("SAT-Solver Query Results:", data_integrity_validation(sat_results, constraints, query))
+        print("KW-SQL-Rewriting Results:", data_integrity_validation(kw_sql_results, constraints, query))
+        print("ConQuer-SQL-Rewriting Results:", data_integrity_validation(conquer_sql_results, constraints, query))
+        print("Regular SQL Query Results:", data_integrity_validation(sql_results, constraints, query))
 
-        # Generate expected results for this query
+        # Write the data integrity validation results to a CSV file
+        with open(f"query{i}_data_integrity_validation_results.csv", mode='w', newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Method", "Consistency and Integrity of Data Results Maintained?"])
+            writer.writerow(["SAT-Solver", data_integrity_validation(sat_results, constraints, query)])
+            writer.writerow(["KW-SQL-Rewriting", data_integrity_validation(kw_sql_results, constraints, query)])
+            writer.writerow(["ConQuer-SQL-Rewriting", data_integrity_validation(conquer_sql_results, constraints, query)])
+            writer.writerow(["Regular SQL Query", data_integrity_validation(sql_results, constraints, query)])
+            
+        # Load the expected results from the CSV file
         output_file = f"query{i}_expected_results.csv"
         output_file_2 = f"query{i}_expected_results_2.csv"
-        # generate_expected_results(data, query, output_file)
-        # generate_expected_results_2(data, query, output_file_2)
-
-        # Load the expected results from the CSV file
         expected_results = load_data_from_csv(output_file)
         expected_results_2 = load_data_from_csv(output_file_2)
 
@@ -404,20 +409,20 @@ if __name__ == "__main__":
             writer = csv.writer(file)
             # writer.writerow(["Accuracy Results against 1st set of Expected Results (where for multiple records with the same primary key, keep the first instance and disregard the rest of the records)"])
             writer.writerow(["Method", "Accuracy"])
-            writer.writerow(["SAT", sat_accuracy])
-            writer.writerow(["KW-SQL", kw_sql_accuracy])
-            writer.writerow(["ConQuer-SQL", conquer_sql_accuracy])
-            writer.writerow(["SQL", sql_accuracy])
+            writer.writerow(["SAT-Solver", sat_accuracy])
+            writer.writerow(["KW-SQL-Rewriting", kw_sql_accuracy])
+            writer.writerow(["ConQuer-SQL-Rewriting", conquer_sql_accuracy])
+            writer.writerow(["Regular SQL Query", sql_accuracy])
         
         # Accuracy results against the second set of expected results
         with open(f"query{i}_accuracy_results_2.csv", mode='w', newline="") as file:
             writer = csv.writer(file)
             # writer.writerow(["Accuracy Results against 2nd set of Expected Results (where for any multiple records with the same primary key, disregard all of those records)"])
             writer.writerow(["Method", "Accuracy"])
-            writer.writerow(["SAT", sat_accuracy_2])
-            writer.writerow(["KW-SQL", kw_sql_accuracy_2])
-            writer.writerow(["ConQuer-SQL", conquer_sql_accuracy_2])
-            writer.writerow(["SQL", sql_accuracy_2])
+            writer.writerow(["SAT-Solver", sat_accuracy_2])
+            writer.writerow(["KW-SQL-Rewriting", kw_sql_accuracy_2])
+            writer.writerow(["ConQuer-SQL-Rewriting", conquer_sql_accuracy_2])
+            writer.writerow(["Regular SQL Query", sql_accuracy_2])
 
         # Collect performance metrics
         metrics = cavsat_system.get_metrics()

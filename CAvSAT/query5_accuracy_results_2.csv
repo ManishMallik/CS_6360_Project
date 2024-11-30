@@ -1,5 +1,5 @@
 Method,Accuracy
-SAT,1.0
-KW-SQL,1.0
-ConQuer-SQL,1.0
-SQL,0.6638755980861244
+SAT-Solver,1.0
+KW-SQL-Rewriting,1.0
+ConQuer-SQL-Rewriting,1.0
+Regular SQL Query,0.6638755980861244
