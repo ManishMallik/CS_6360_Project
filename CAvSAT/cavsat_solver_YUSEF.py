@@ -22,15 +22,11 @@ class CAvSAT:
 
         # Encode the constraints
         for constraint in self.constraints:
-            conflicting_records = []
             for record in self.data:
                 if not constraint(record):
                     self.clauses.append([-self.variables[record]])
-                    # conflicting_records.append(self.variables[record])
                 else:
                     self.clauses.append([self.variables[record]])
-            # if conflicting_records:
-            #     self.clauses.append([-r for r in conflicting_records])
 
         end_time = time.time()
         self.performance_metrics["Encoding Time"] = end_time - start_time
@@ -67,9 +63,28 @@ class CAvSAT:
 
         return answers
 
+    # def kw_sql_simulation(self, query):
+    #     start_time = time.time()
+    #     result = [record for record in self.data if query(record)]
+    #     end_time = time.time()
+
+    #     self.performance_metrics["KW-SQL Simulation Time"] = end_time - start_time
+    #     return result
+
+    # def conquer_sql_simulation(self, query):
+    #     start_time = time.time()
+    #     result = [record for record in self.data if query(record)]
+    #     end_time = time.time()
+
+    #     self.performance_metrics["SQL Simulation Time"] = end_time - start_time
+    #     return result
+
     def kw_sql_simulation(self, query):
         start_time = time.time()
-        result = [record for record in self.data if query(record)]
+        result = []
+        for record in self.data:
+            if query(record) and all(constraint(record) for constraint in self.constraints):
+                result.append(record)
         end_time = time.time()
 
         self.performance_metrics["KW-SQL Simulation Time"] = end_time - start_time
@@ -77,18 +92,74 @@ class CAvSAT:
 
     def conquer_sql_simulation(self, query):
         start_time = time.time()
-        result = [record for record in self.data if query(record)]
+        result = [record for record in self.data if query(record) and all(constraint(record) for constraint in self.constraints)]
         end_time = time.time()
 
-        self.performance_metrics["SQL Simulation Time"] = end_time - start_time
+        self.performance_metrics["ConQuer-SQL Simulation Time"] = end_time - start_time
         return result
+
+    # def kw_sql_simulation(self, query):
+    #     start_time = time.time()
+    #     # Step 1: Identify violating primary keys
+    #     primary_key_indices = (0, 3)  # Assuming primary key is (StudentID, CourseName)
+    #     key_counts = {}
+    #     for record in self.data:
+    #         key = tuple(record[i] for i in primary_key_indices)
+    #         key_counts[key] = key_counts.get(key, 0) + 1
+
+    #     violating_keys = {key for key, count in key_counts.items() if count > 1}
+
+    #     # Step 2: Rewrite the query to exclude violating keys
+    #     def rewritten_query(record):
+    #         key = tuple(record[i] for i in primary_key_indices)
+    #         return query(record) and key not in violating_keys
+
+    #     rewriting_end_time = time.time()
+    #     self.performance_metrics["KW-SQL Rewriting Time"] = rewriting_end_time - start_time
+
+    #     # Step 3: Evaluate the rewritten query
+    #     evaluation_start_time = time.time()
+    #     result = [record for record in self.data if rewritten_query(record)]
+    #     evaluation_end_time = time.time()
+    #     self.performance_metrics["KW-SQL Evaluation Time"] = evaluation_end_time - evaluation_start_time
+    #     self.performance_metrics["KW-SQL Simulation Time"] = self.performance_metrics["KW-SQL Rewriting Time"] + self.performance_metrics["KW-SQL Evaluation Time"]
+
+    #     return result
+
+    # def conquer_sql_simulation(self, query):
+    #     start_time = time.time()
+    #     # Identify violating keys (same as KW-SQL)
+    #     primary_key_indices = (0, 3)
+    #     key_counts = {}
+    #     for record in self.data:
+    #         key = tuple(record[i] for i in primary_key_indices)
+    #         key_counts[key] = key_counts.get(key, 0) + 1
+
+    #     violating_keys = {key for key, count in key_counts.items() if count > 1}
+
+    #     # Rewrite the query according to ConQuer method
+    #     def rewritten_query(record):
+    #         key = tuple(record[i] for i in primary_key_indices)
+    #         return query(record) and key not in violating_keys
+
+    #     rewriting_end_time = time.time()
+    #     self.performance_metrics["ConQuer-SQL Rewriting Time"] = rewriting_end_time - start_time
+
+    #     # Evaluate the rewritten query
+    #     evaluation_start_time = time.time()
+    #     result = [record for record in self.data if rewritten_query(record)]
+    #     evaluation_end_time = time.time()
+    #     self.performance_metrics["ConQuer-SQL Evaluation Time"] = evaluation_end_time - evaluation_start_time
+    #     self.performance_metrics["ConQuer-SQL Simulation Time"] = self.performance_metrics["ConQuer-SQL Rewriting Time"] + self.performance_metrics["ConQuer-SQL Evaluation Time"]
+
+    #     return result
     
     def sql_simulation(self, query):
         start_time = time.time()
         result = [record for record in self.data if query(record)]
         end_time = time.time()
 
-        self.performance_metrics["ConQuer-SQL Simulation Time"] = end_time - start_time
+        self.performance_metrics["SQL Simulation Time"] = end_time - start_time
         return result
 
     def print_performance_metrics(self):
@@ -158,8 +229,8 @@ if __name__ == "__main__":
     ]
 
     # Define a query: Find all students in Math courses
-    query1 = lambda record: "Math" in record[3]
-    query2 = lambda record: "CS" in record[3] and "Prof. Brown" in record[4]
+    # query1 = lambda record: "Math" in record[3]
+    # query2 = lambda record: "CS" in record[3] and "Prof. Brown" in record[4]
 
     # YUSEF HERE. ADDED MORE QUERIES: (I COMMENTED 1 and 2 but didn't go over your old code :) )
     # Find all students in Math courses
@@ -186,10 +257,10 @@ if __name__ == "__main__":
     # YUSEF HERE. ADDED MORE QUERIES:
 
     # YUSEF HERE. ADDED CODE TO GENERATE EXPECTED RESULTS
-    def generate_expected_results(data, query, output_file, primary_key_index=0):
+    def generate_expected_results(data, query, output_file, primary_key_index=(0, 3)):
         """
         Generate and save expected results for a given query, resolving primary key conflicts.
-        I decided to go with just keeping the first instance o0f a key that has a conflict.
+        I decided to go with just keeping the first instance of a key that has a conflict.
 
         ie. 
         StudentID,StudentName,CourseID,CourseName,Instructor
@@ -207,7 +278,7 @@ if __name__ == "__main__":
         filtered_results = []
 
         for record in data:
-            primary_key = record[primary_key_index]  # Extract the primary key
+            primary_key = tuple(record[i] for i in primary_key_index)
             if query(record) and primary_key not in seen_primary_keys:
                 filtered_results.append(record)
                 seen_primary_keys.add(primary_key)  # Mark this primary key as seen
@@ -220,6 +291,33 @@ if __name__ == "__main__":
 
         print(f"Expected results written to {output_file}")
 
+    # MANISH HERE. ADDED CODE TO GENERATE EXPECTED RESULTS (Method 2)
+    def generate_expected_results_2(data, query, output_file, primary_key_index=(0, 3)):
+        seen_primary_keys = set()
+        filtered_results = []
+
+        # Identify and track records that violate primary key constraints
+        primary_key_violations = set()
+        for record in data:
+            primary_key = tuple(record[i] for i in primary_key_index)
+            if primary_key in seen_primary_keys:
+                primary_key_violations.add(primary_key)
+            else:
+                seen_primary_keys.add(primary_key)
+        
+        # Filter out records that violate primary key constraints
+        for record in data:
+            primary_key = tuple(record[i] for i in primary_key_index)
+            if query(record) and primary_key not in primary_key_violations:
+                filtered_results.append(record)
+        
+        # Write the filtered results to a CSV file
+        with open(output_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+            writer.writerows(filtered_results)
+
+        print(f"Expected results written to {output_file}")
 
     # Apply for all queries
     generate_expected_results(data, query1, "query1_expected_results.csv")
@@ -229,8 +327,16 @@ if __name__ == "__main__":
     generate_expected_results(data, query5, "query5_expected_results.csv")
     generate_expected_results(data, query6, "query6_expected_results.csv")
     generate_expected_results(data, query7, "query7_expected_results.csv")
-    # YUSEF HERE. ADDED CODE TO GENERATE EXPECTED RESULTS
 
+    generate_expected_results_2(data, query1, "query1_expected_results_2.csv")
+    generate_expected_results_2(data, query2, "query2_expected_results_2.csv")
+    generate_expected_results_2(data, query3, "query3_expected_results_2.csv")
+    generate_expected_results_2(data, query4, "query4_expected_results_2.csv")
+    generate_expected_results_2(data, query5, "query5_expected_results_2.csv")
+    generate_expected_results_2(data, query6, "query6_expected_results_2.csv")
+    generate_expected_results_2(data, query7, "query7_expected_results_2.csv")
+
+    # YUSEF HERE. ADDED CODE TO GENERATE EXPECTED RESULTS
 
 
     #YUSEF HERE. Instead of writing all the code 7 times to make a query I looped on all Queries
@@ -243,6 +349,9 @@ if __name__ == "__main__":
     # Initialize arrays for performance metrics
     encoding_times = []
     solving_times = []
+    kw_sql_rewriting_times = []
+    conquer_sql_rewriting_times = []
+    sql_times = []
     query_labels = []
 
     # Process all queries
@@ -267,16 +376,31 @@ if __name__ == "__main__":
 
         # Simulate KW-SQL query
         kw_sql_results = cavsat_system.kw_sql_simulation(query)
+        # if kw_sql_results:
+
+        #     # Save KW-SQL results to a CSV file
+        #     with open(f"query{i}_kw_sql_results.csv", mode='w', newline="") as file:
+        #         writer = csv.writer(file)
+        #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+        #         writer.writerows(kw_sql_results)
 
         # Simulate ConQuer-SQL query
         conquer_sql_results = cavsat_system.conquer_sql_simulation(query)
+        # if conquer_sql_results:
+        #     # Save ConQuer-SQL results to a CSV file
+        #     with open(f"query{i}_conquer_sql_results.csv", mode='w', newline="") as file:
+        #         writer = csv.writer(file)
+        #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+        #         writer.writerows(conquer_sql_results)
 
         # Simulate SQL-like query
         sql_results = cavsat_system.sql_simulation(query)
-        # Uncomment if u want the print logs, WAAAAAY To many lol 
-        # print("\nSQL Query Results:")        
-        # for r in sql_results:
-        #     print(r)
+        # if sql_results:
+        #     # Save SQL results to a CSV file
+        #     with open(f"query{i}_sql_results.csv", mode='w', newline="") as file:
+        #         writer = csv.writer(file)
+        #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+        #         writer.writerows(sql_results)
 
         # Validate results
         print("\nData Integrity Validation:")
@@ -287,12 +411,53 @@ if __name__ == "__main__":
 
         # Generate expected results for this query
         output_file = f"query{i}_expected_results.csv"
+        output_file_2 = f"query{i}_expected_results_2.csv"
         generate_expected_results(data, query, output_file)
+        generate_expected_results_2(data, query, output_file_2)
+
+        # Load the expected results from the CSV file
+        expected_results = load_data_from_csv(output_file)
+        expected_results_2 = load_data_from_csv(output_file_2)
+
+        # Calculate accuracy for each method
+        sat_accuracy = accuracy(sat_results, expected_results)
+        kw_sql_accuracy = accuracy(kw_sql_results, expected_results)
+        conquer_sql_accuracy = accuracy(conquer_sql_results, expected_results)
+        sql_accuracy = accuracy(sql_results, expected_results)
+
+        sat_accuracy_2 = accuracy(sat_results, expected_results_2)
+        kw_sql_accuracy_2 = accuracy(kw_sql_results, expected_results_2)
+        conquer_sql_accuracy_2 = accuracy(conquer_sql_results, expected_results_2)
+        sql_accuracy_2 = accuracy(sql_results, expected_results_2)
+
+        print("\nAccuracy Comparison Method 1:")
+        print(f"SAT Accuracy: {sat_accuracy:.4f}")
+        print(f"KW-SQL Accuracy: {kw_sql_accuracy:.4f}")
+        print(f"ConQuer-SQL Accuracy: {conquer_sql_accuracy:.4f}")
+        print(f"SQL Accuracy: {sql_accuracy:.4f}")
+
+        print("\nAccuracy Comparison Method 2:")
+        print(f"SAT Accuracy: {sat_accuracy_2:.4f}")
+        print(f"KW-SQL Accuracy: {kw_sql_accuracy_2:.4f}")
+        print(f"ConQuer-SQL Accuracy: {conquer_sql_accuracy_2:.4f}")
+        print(f"SQL Accuracy: {sql_accuracy_2:.4f}")
+
+        # Save the accuracy results to a CSV file
+        with open(f"query{i}_accuracy_results.csv", mode='w', newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Method", "Accuracy"])
+            writer.writerow(["SAT", sat_accuracy])
+            writer.writerow(["KW-SQL", kw_sql_accuracy])
+            writer.writerow(["ConQuer-SQL", conquer_sql_accuracy])
+            writer.writerow(["SQL", sql_accuracy])
 
         # Collect performance metrics
         metrics = cavsat_system.get_metrics()
         encoding_times.append(metrics.get("Encoding Time", 0))
         solving_times.append(metrics.get("SAT Solving Time", 0))
+        kw_sql_rewriting_times.append(metrics.get("KW-SQL Simulation Time", 0))
+        conquer_sql_rewriting_times.append(metrics.get("ConQuer-SQL Simulation Time", 0))
+        sql_times.append(metrics.get("SQL Simulation Time", 0))
         query_labels.append(f"Q{i}")
 
     # Plot performance metrics
@@ -308,6 +473,24 @@ if __name__ == "__main__":
     ax.set_title('Performance Metrics by Query')
     ax.set_xticks(x)
     ax.set_xticklabels(query_labels)
+    ax.legend()
+
+    plt.tight_layout()
+    plt.show()
+
+    # Plot performance metrics for SAT Solving vs KW-SQL vs ConQuer-SQL
+    fig, ax = plt.subplots(figsize=(10, 6))
+    x = np.arange(len(query_labels))
+    ax.plot(x, solving_times, label='SAT Solving Time', marker='o', linestyle='-', color='b')
+    ax.plot(x, kw_sql_rewriting_times, label='KW-SQL Simulation Time', marker='s', linestyle='--', color='r')
+    ax.plot(x, conquer_sql_rewriting_times, label='ConQuer-SQL Simulation Time', marker='x', linestyle='-.', color='g')
+    ax.plot(x, sql_times, label='SQL Simulation Time', marker='d', linestyle=':', color='m')
+    ax.set_xlabel('Queries')
+    ax.set_ylabel('Time (seconds)')
+    ax.set_title('Performance Metrics by Query')
+    ax.set_xticks(x)
+    ax.set_xticklabels(query_labels)
+    ax.set_yscale('log')
     ax.legend()
 
     plt.tight_layout()
