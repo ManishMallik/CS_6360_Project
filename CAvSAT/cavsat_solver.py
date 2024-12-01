@@ -173,6 +173,79 @@ def compare_method_results(method1results, method2results, method1Name, method2N
     }
     return same_results, different_results
 
+# Function to generate expected results for each query (Method 1)
+def generate_expected_results(data, query, output_file, primary_key_index=(0, 3)):
+        
+    # Generate and save expected results for a given query, resolving primary key conflicts.
+    # Keep the first instance of a key that has a conflict.
+
+    # i.e. 
+    # StudentID,StudentName,CourseID,CourseName,Instructor <==== Header, not a record
+    # 1461,Kimberly Reyes,1480,CS138,Prof. Jones <==== SHOULD BE KEPT!!!
+    # 1461,Kimberly R.,   1480,CS138,Prof. Jones <==== SHOULD BE IGNORED because of previous record!!!
+    # 3556,Isla Wilson,   2967,Physics156,Prof. Jones
+
+    # output: (Doesn't have the primary key violation)
+    # StudentID,StudentName,CourseID,CourseName,Instructor <==== Header, not a record
+    # 1461,Kimberly Reyes,1480,CS138,Prof. Jones
+    # 3556,Isla Wilson,    2967,Physics156,Prof. Jones
+
+    # Initialize set to track primary keys
+    seen_primary_keys = set()
+        
+    # Initialize list to store filtered results
+    filtered_results = []
+
+    for record in data:
+        primary_key = tuple(record[i] for i in primary_key_index)
+            
+        # If the record satisfies the query and the primary key has not been seen before,
+        # add it to the filtered results and mark the primary key as seen
+        if query(record) and primary_key not in seen_primary_keys:
+            filtered_results.append(record)
+            seen_primary_keys.add(primary_key) 
+
+    # Write the filtered results to a CSV file
+    with open(output_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])  # Header
+        writer.writerows(filtered_results)
+
+    print(f"Expected results written to {output_file}")
+
+# Function to generate expected results for each query (Method 2)
+# Unlike the previous function (Method 1), this function filters out all of the records that violate primary key constraints
+def generate_expected_results_2(data, query, output_file, primary_key_index=(0, 3)):
+    
+    # Initialize set to track primary keys
+    seen_primary_keys = set()
+    
+    # Initialize list to store filtered results
+    filtered_results = []
+
+    # Identify and track records that violate primary key constraints
+    primary_key_violations = set()
+    for record in data:
+        primary_key = tuple(record[i] for i in primary_key_index)
+        if primary_key in seen_primary_keys:
+            primary_key_violations.add(primary_key)
+        else:
+            seen_primary_keys.add(primary_key)
+        
+    # Filter out records that violate primary key constraints
+    for record in data:
+        primary_key = tuple(record[i] for i in primary_key_index)
+        if query(record) and primary_key not in primary_key_violations:
+            filtered_results.append(record)
+        
+    # Write the filtered results to a CSV file
+    with open(output_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+        writer.writerows(filtered_results)
+    
+    print(f"Expected results written to {output_file}")
+
 # Main function
 if __name__ == "__main__":
     # Load dataset from a CSV file
@@ -217,68 +290,73 @@ if __name__ == "__main__":
     query7 = lambda record: "Taylor" in record[1]
 
     # Function to generate expected results for each query (Method 1)
-    def generate_expected_results(data, query, output_file, primary_key_index=(0, 3)):
-        """
-        Generate and save expected results for a given query, resolving primary key conflicts.
-        Keep the first instance of a key that has a conflict.
-
-        ie. 
-        StudentID,StudentName,CourseID,CourseName,Instructor
-        1461,Kimberly Reyes,1480,CS138,Prof. Jones
-        1461,Kimberly R.,     1480,CS138,Prof. Jones <=============== SHOULD BE IGNORED!!!
-        3556,Isla Wilson,     2967,Physics156,Prof. Jones
-
-        output: (Doesn't have the primary key violation)
-        StudentID,StudentName,CourseID,CourseName,Instructor
-        1461,Kimberly Reyes,1480,CS138,Prof. Jones
-        3556,Isla Wilson,    2967,Physics156,Prof. Jones
-
-        """
-        seen_primary_keys = set()  # To track unique primary keys
-        filtered_results = []
-
-        for record in data:
-            primary_key = tuple(record[i] for i in primary_key_index)
-            if query(record) and primary_key not in seen_primary_keys:
-                filtered_results.append(record)
-                seen_primary_keys.add(primary_key)  # Mark this primary key as seen
-
-        # Write the filtered results to a CSV file
-        with open(output_file, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])  # Header
-            writer.writerows(filtered_results)
-
-        print(f"Expected results written to {output_file}")
-
-    # Function to generate expected results for each query (Method 2)
-    # Unlike the previous function (Method 1), this function filters out all of the records that violate primary key constraints
-    def generate_expected_results_2(data, query, output_file, primary_key_index=(0, 3)):
-        seen_primary_keys = set()
-        filtered_results = []
-
-        # Identify and track records that violate primary key constraints
-        primary_key_violations = set()
-        for record in data:
-            primary_key = tuple(record[i] for i in primary_key_index)
-            if primary_key in seen_primary_keys:
-                primary_key_violations.add(primary_key)
-            else:
-                seen_primary_keys.add(primary_key)
+    # def generate_expected_results(data, query, output_file, primary_key_index=(0, 3)):
         
-        # Filter out records that violate primary key constraints
-        for record in data:
-            primary_key = tuple(record[i] for i in primary_key_index)
-            if query(record) and primary_key not in primary_key_violations:
-                filtered_results.append(record)
-        
-        # Write the filtered results to a CSV file
-        with open(output_file, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
-            writer.writerows(filtered_results)
+    #     # Generate and save expected results for a given query, resolving primary key conflicts.
+    #     # Keep the first instance of a key that has a conflict.
 
-        print(f"Expected results written to {output_file}")
+    #     # i.e. 
+    #     # StudentID,StudentName,CourseID,CourseName,Instructor <==== Header, not a record
+    #     # 1461,Kimberly Reyes,1480,CS138,Prof. Jones <==== SHOULD BE KEPT!!!
+    #     # 1461,Kimberly R.,   1480,CS138,Prof. Jones <==== SHOULD BE IGNORED because of previous record!!!
+    #     # 3556,Isla Wilson,   2967,Physics156,Prof. Jones
+
+    #     # output: (Doesn't have the primary key violation)
+    #     # StudentID,StudentName,CourseID,CourseName,Instructor <==== Header, not a record
+    #     # 1461,Kimberly Reyes,1480,CS138,Prof. Jones
+    #     # 3556,Isla Wilson,    2967,Physics156,Prof. Jones
+
+    #     # Initialize set to track primary keys
+    #     seen_primary_keys = set()
+        
+    #     # Initialize list to store filtered results
+    #     filtered_results = []
+
+    #     for record in data:
+    #         primary_key = tuple(record[i] for i in primary_key_index)
+            
+    #         # If the record satisfies the query and the primary key has not been seen before,
+    #         # add it to the filtered results and mark the primary key as seen
+    #         if query(record) and primary_key not in seen_primary_keys:
+    #             filtered_results.append(record)
+    #             seen_primary_keys.add(primary_key) 
+
+    #     # Write the filtered results to a CSV file
+    #     with open(output_file, mode='w', newline='') as file:
+    #         writer = csv.writer(file)
+    #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])  # Header
+    #         writer.writerows(filtered_results)
+
+    #     print(f"Expected results written to {output_file}")
+
+    # # Function to generate expected results for each query (Method 2)
+    # # Unlike the previous function (Method 1), this function filters out all of the records that violate primary key constraints
+    # def generate_expected_results_2(data, query, output_file, primary_key_index=(0, 3)):
+    #     seen_primary_keys = set()
+    #     filtered_results = []
+
+    #     # Identify and track records that violate primary key constraints
+    #     primary_key_violations = set()
+    #     for record in data:
+    #         primary_key = tuple(record[i] for i in primary_key_index)
+    #         if primary_key in seen_primary_keys:
+    #             primary_key_violations.add(primary_key)
+    #         else:
+    #             seen_primary_keys.add(primary_key)
+        
+    #     # Filter out records that violate primary key constraints
+    #     for record in data:
+    #         primary_key = tuple(record[i] for i in primary_key_index)
+    #         if query(record) and primary_key not in primary_key_violations:
+    #             filtered_results.append(record)
+        
+    #     # Write the filtered results to a CSV file
+    #     with open(output_file, mode='w', newline='') as file:
+    #         writer = csv.writer(file)
+    #         writer.writerow(["StudentID", "StudentName", "CourseID", "CourseName", "Instructor"])
+    #         writer.writerows(filtered_results)
+
+    #     print(f"Expected results written to {output_file}")
 
     # Apply for all queries
     generate_expected_results(data, query1, "query1_expected_results.csv")
