@@ -15,5 +15,6 @@ How to Compile and Run Our Code:
    2. pip install python-sat matplotlib numpy pandas 
    3. If the above command throws an error, run:
     
-    pip install --user python-sat matplotlib numpy pandas
+      pip install --user python-sat matplotlib numpy pandas
+
    4. py cavsat_solver.py
