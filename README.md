@@ -11,7 +11,7 @@ For the SQL-Rewriting functions, we skipped the query rewriting part and only wr
 
 # Tools to Install and Setup
 Required Tools and Environments to Install:
-1. VSCode (or any other IDE that Python scripts can run on)
+1. VSCode (or any other IDE that Python scripts can run on) (https://code.visualstudio.com/download)
 2. Python SDK with version >= 3.10 (https://www.python.org/downloads/)
 3. Microsoft C++ Build Tools (https://visualstudio.microsoft.com/visual-cpp-build-tools/)
    1. MSVC (Microsoft C++ Compiler)
@@ -19,13 +19,15 @@ Required Tools and Environments to Install:
 
 # Running the Program
 How to Compile and Run Our Code:
-1. Download our code from GitHub. To do this, click on the green code button, and click on "Download ZIP".
+1. Download our code from GitHub. To do this, click on the green code button, and click on "Download ZIP". An alternative route to take is downloading the zip folder in our submission, which will contain our code, images, and CSV files.
 2. Extract the folder and files from that ZIP folder.
-3. Open up the directory in VSCode where the CAvSAT folder is in. After getting our code in VSCode, make sure to run the following commands:
-   1. cd CAvSAT
+3. Open up that extracted folder in VSCode, where the CAvSAT folder and README file should be in. After getting our code in VSCode and opening up a terminal within that directory, run the following commands:
+   1. cd CAvSAT (To get in the CAvSAT directory)
    2. pip install python-sat matplotlib numpy pandas 
-   3. If the above command throws an error, run:
+   3. If the above command works, skip this step and go to iv. Otherwise, if it throws an error, run:
     
       pip install --user python-sat matplotlib numpy pandas
 
    4. py cavsat_solver.py
+
+If it is successfully running, you should see "Processing Query 1..." in the terminal. It will take time to run the whole project, so be patient. Once you see a stacked bar graph, you can observe it, and close that graph in order to see the next graph. Program will successfully stop running after you close both graphs displayed to you by the program.
