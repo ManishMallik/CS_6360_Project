@@ -22,12 +22,12 @@ How to Compile and Run Our Code:
 1. Download our code from GitHub. To do this, click on the green code button, and click on "Download ZIP". An alternative route to take is downloading the zip folder in our submission, which will contain our code, images, and CSV files.
 2. Extract the folder and files from that ZIP folder.
 3. Open up that extracted folder in VSCode, where the CAvSAT folder and README file should be in. After getting our code in VSCode and opening up a terminal within VSCode, run the following commands:
-   1. cd CAvSAT (To get in the CAvSAT directory if not in there already)
-   2. pip install python-sat matplotlib numpy pandas 
-   3. If the above command works, skip this step and go to iv. Otherwise, if it throws an error, run:
+   1. `cd CAvSAT` (To get in the CAvSAT directory if not in there already)
+   2. `pip install python-sat matplotlib numpy pandas` 
+   3. If the above command works, skip this step and go to *iv*. Otherwise, if it throws an error, run:
     
-      pip install --user python-sat matplotlib numpy pandas
+      `pip install --user python-sat matplotlib numpy pandas`
 
-   4. py cavsat_solver.py
+   4. `py cavsat_solver.py`
 
 If it is successfully running, you should see "Processing Query 1..." in the terminal. It will take time to run the whole project, so be patient. Once you see a stacked bar graph, you can observe it, and close that graph in order to see the next graph. Program will successfully stop running after you close both graphs displayed to you by the program.
