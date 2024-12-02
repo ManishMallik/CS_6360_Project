@@ -21,7 +21,7 @@ Required Tools and Environments to Install:
 
 # Running the Program
 How to Compile and Run Our Code:
-1. Download our code from GitHub. To do this, click on the green code button, and click on "Download ZIP". An alternative route to take is downloading the zip folder in our submission, which will contain our code, images, and CSV files.
+1. Download our code from GitHub. To do this, click on the green button labeled "<> Code", and click on "Download ZIP".
 2. Extract the folder and files from that ZIP folder.
 3. Open up that extracted folder in VSCode, where the CAvSAT folder and README file should be in. After getting our code in VSCode and opening up a terminal within VSCode, run the following commands:
    1. `cd CAvSAT` (To get in the CAvSAT directory if not in there already)
