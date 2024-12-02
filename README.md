@@ -9,7 +9,7 @@ In this project, the main algorithm we implemented and tested is the CAvSAT syst
 
 For the SQL-Rewriting functions, we skipped the query rewriting part and only wrote the steps that would happen after a query is assumed to be rewritten because the CAvSAT system is the main focus of our project, and we mainly want to compare it against other methods in terms of solving time, data consistency and integrity, and accuracy. A full setup of the SQL-Rewriting functions would introduce unwanted complexities and time consumption, whereas simulating/assuming the queries are already rewritten and only including the steps that happen after rewriting a query will still help us achieve our goal and stay within the scope.
 
-The dataset we are using is stored in dataset.csv, which consists of 10K entries. Around 10-25% of the entries will have the same primary keys as other entries, which we need to test and evaluate the performance of our CAvSAT system and compare that against the SQL-Rewriting methods and the regular SQL retrieval method.
+The dataset we are using is stored in dataset.csv (in the CAvSAT folder), which consists of 10K entries. Around 10-25% of the entries will have the same primary keys as other entries, which we need to test and evaluate the performance of our CAvSAT system and compare that against the SQL-Rewriting methods and the regular SQL retrieval method.
 
 # Tools to Install and Setup
 Required Tools and Environments to Install:
